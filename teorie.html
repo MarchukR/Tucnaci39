@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Návrh databází: Teoretická èást</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        h1, h2, h3 {
+            color: #007bff;
+        }
+
+        section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .audio-section {
+            background-color: #17a2b8;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        iframe {
+            display: block;
+            margin: 10px auto;
+        }
+
+        #sources {
+            font-style: italic;
+        }
+
+        code {
+            background-color: #e9ecef;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        pre {
+            background-color: #e9ecef;
+            padding: 10px;
+            overflow-x: auto;
+            border-radius: 8px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Návrh databází: Klíè k efektivním datùm</h1>
+    </header>
+
+    <section>
+        <h2>Úvod do svìta databází</h2>
+        <p>V dnešní digitální éøe jsou data cennım aktivem. <strong>Správnı návrh databáze</strong> je zásadní pro jejich efektivní ukládání, vyhledávání a manipulaci. Bez dobøe strukturované databáze se i ty nejlepší aplikace potıkají s problémy s vıkonem a integritou dat.</p>
+        <p><em>Proè je návrh databáze dùleitı?</em> Zajišuje integritu, konzistenci a bezpeènost dat.</p>
+        <p>Co je cílem? Vytvoøit robustní, škálovatelné a snadno udrovatelné datové úloištì.</p>
+        <p>Kdo to potøebuje? Kadá aplikace, od malého webu po rozsáhlı podnikovı systém.</p>
+        <img src="https://miro.medium.com/v2/resize:fit:1400/1*kv-24zUQuUmC4vxIMlzILw.jpeg" alt="Relational database design illustration">
+    </section>
+
+    <section>
+        <h2>Teoretické základy: Co je databáze?</h2>
+        <p>Databáze je organizovaná kolekce strukturovanıch informací neboli dat, typicky uloenıch elektronicky v poèítaèovém systému. Databázovı systém se obvykle skládá z databázového stroje (DBMS), kterı umoòuje uivatelùm spravovat a interagovat s daty.</p>
+        <ul>
+            <li><strong>Data:</strong> Neorganizované informace.</li>
+            <li><strong>Aplikace:</strong> Rozhraní pro uivatele.</li>
+            <li><strong>Databáze:</strong> Organizovaná kolekce dat.</li>
+            <li><strong>DBMS:</strong> Software pro správu databází.</li>
+        </ul>
+        <canvas id="databaseChart" width="400" height="200"></canvas>
+        <script>
+            const ctx = document.getElementById('databaseChart').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Data', 'Aplikace', 'Databáze', 'DBMS'],
+                    datasets: [{
+                        label: 'Databázovı systém',
+                        data: [25, 25, 25, 25],
+                        backgroundColor: ['#007bff', '#17a2b8', '#6610f2', '#343a40']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' }
+                    }
+                }
+            });
+        </script>
+    </section>
+
+    <section>
+        <h2>Relaèní databáze a SQL</h2>
+        <p>Relaèní databáze ukládají data v tabulkách, které jsou vzájemnì propojeny pomocí klíèù. Jsou základem mnoha systémù díky své strukturovanosti a schopnosti udrovat integritu dat.</p>
+        <h3>Klíèové pojmy</h3>
+        <ul>
+            <li><strong>Tabulka (Table):</strong> Skládá se z øádkù a sloupcù, uchovává specifickı typ dat.</li>
+            <li><strong>Øádek (Row/Record):</strong> Jedna záznamová poloka v tabulce.</li>
+            <li><strong>Sloupec (Column/Field):</strong> Atribut popisující vlastnost záznamu.</li>
+            <li><strong>Primární klíè (Primary Key):</strong> Unikátní identifikátor kadého øádku v tabulce.</li>
+            <li><strong>Cizí klíè (Foreign Key):</strong> Odkazuje na primární klíè jiné tabulky a vytváøí vztahy.</li>
+        </ul>
+        <p>SQL (Structured Query Language) je standardní jazyk pro práci s relaèními databázemi – pro vytváøení, ètení, aktualizaci a mazání dat.</p>
+        <img src="https://media.geeksforgeeks.org/wp-content/uploads/20250111112649494919/relational_model.webp" alt="Relational model illustration">
+    </section>
+
+    <section>
+        <h2>Srovnání: SQL vs. NoSQL</h2>
+        <p>Volba mezi relaèními (SQL) a nerelaèními (NoSQL) databázemi závisí na konkrétních poadavcích projektu.</p>
+        <h3>SQL (Relaèní)</h3>
+        <ul>
+            <li>Strukturovaná data</li>
+            <li>Pevné schéma</li>
+            <li>Silná integrita dat (ACID)</li>
+            <li>Horizontální škálování je nároènìjší</li>
+            <li>Pøíklady: MySQL, PostgreSQL, Oracle</li>
+        </ul>
+        <h3>NoSQL (Nerelaèní)</h3>
+        <ul>
+            <li>Nestrukturovaná/semistrukturovaná data</li>
+            <li>Flexibilní schéma</li>
+            <li>Distribuované systémy, vysoká škálovatelnost</li>
+            <li>Není vdy ACID compliant</li>
+            <li>Pøíklady: MongoDB, Cassandra, Redis</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Fáze návrhu databáze</h2>
+        <p>Návrh databáze je iterativní proces, kterı zahrnuje nìkolik klíèovıch fází od analızy poadavkù a po implementaci a údrbu.</p>
+        <ol>
+            <li><strong>Analıza poadavkù:</strong> Definovaní úèelu databáze, sbìr informací o datech a uivatelích.</li>
+            <li><strong>Konceptuální návrh:</strong> Vytvoøení ER diagramu (Entity-Relationship) – vizuální reprezentace entit a jejich vztahù.</li>
+            <li><strong>Logickı návrh:</strong> Transformace ER diagramu do relaèního modelu (tabulky, sloupce, klíèe).</li>
+            <li><strong>Fyzickı návrh:</strong> Specifikace datovıch typù, indexù a úloištì pro konkrétní DBMS.</li>
+        </ol>
+        <img src="https://cdn.nulab.com/learn-wp/app/uploads/2022/02/21193830/er-diagram-for-online-shopping.webp" alt="ER diagram for e-shop">
+    </section>
+
+    <section>
+        <h2>Praktická èást: ER diagram</h2>
+        <p>ER diagram (Entity-Relationship Diagram) je klíèovı nástroj pro konceptuální návrh databáze. Vizuálnì znázoròuje entity (objekty, o kterıch uchováváme data) a vztahy mezi nimi.</p>
+        <p>Zde vidíme jednoduchı ER diagram pro e-shop, kde zákazník (Customer) mùe zadávat mnoho objednávek (Order). Kadá entita má své atributy (vlastnosti).</p>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/xsg9BDiwiJE" title="ER Diagram Tutorial" frameborder="0" allowfullscreen></iframe>
+    </section>
+
+    <section>
+        <h2>Normalizace databáze</h2>
+        <p>Normalizace je proces organizace sloupcù a tabulek v relaèní databázi pro minimalizaci redundantních dat a zlepšení integrity dat. Rozlišujeme nìkolik normalizovanıch forem (NF).</p>
+        <ol>
+            <li><strong>1. NF (First Normal Form):</strong> ádné opakující se skupiny, všechny sloupce jsou atomické.</li>
+            <li><strong>2. NF (Second Normal Form):</strong> Splòuje 1. NF a všechny neprimární atributy jsou plnì závislé na celém primárním klíèi.</li>
+            <li><strong>3. NF (Third Normal Form):</strong> Splòuje 2. NF a ádné neprimární atributy nejsou tranzitivnì závislé na primárním klíèi.</li>
+        </ol>
+        <p>Vyšší normalizované formy existují, ale 3NF je èasto dostateèná pro vìtšinu aplikací.</p>
+        <img src="https://miro.medium.com/0*vCmK7a4D4Qks6iM7.png" alt="Database normalization forms">
+    </section>
+
+    <section>
+        <h2>Ukázka SQL dotazù</h2>
+        <p>Praktické ukázky základních SQL dotazù, které demonstrují manipulaci s daty.</p>
+        <h3>Vytvoøení tabulky:</h3>
+        <pre><code>CREATE TABLE Zakaznici ( ID INT PRIMARY KEY, Jmeno VARCHAR(50), Email VARCHAR(100) );</code></pre>
+        <h3>Vıbìr dat:</h3>
+        <pre><code>SELECT Jmeno, Email FROM Zakaznici WHERE Jmeno = 'Jan Novák';</code></pre>
+        <h3>Aktualizace dat:</h3>
+        <pre><code>UPDATE Zakaznici SET Email = 'j.novak@example.com' WHERE ID = 1;</code></pre>
+        <h3>Vloení dat:</h3>
+        <pre><code>INSERT INTO Zakaznici (ID, Jmeno, Email) VALUES (1, 'Jan Novák', 'jan.novak@example.com');</code></pre>
+        <img src="https://i.ytimg.com/vi/BgK88mlgA6I/maxresdefault.jpg" alt="SQL query examples">
+    </section>
+
+    <section class="audio-section">
+        <h2>Audiopøehled</h2>
+        <p>Pro vytvoøení audiopøehledu z textu okruhu pouijte NotebookLM od Google. Nahrajte text do https://notebooklm.google.com/, vyberte "Generate Audio Overview" a tool vygeneruje audio shrnutí. Bohuel, pøímé generování zde není moné, take navštivte stránku pro vlastní vytvoøení.</p>
+    </section>
+
+    <section id="sources">
+        <h2>Pouité zdroje</h2>
+        <ul>
+            <li>W3Schools SQL Tutorial</li>
+            <li>PostgreSQL Official Documentation</li>
+            <li>MySQL Official Documentation</li>
+            <li>Knihy o databázovıch systémech a SQL</li>
+        </ul>
+    </section>
+
+    <script>
+        const driver = window.driver.js.driver;
+        const tour = driver({
+            showProgress: true,
+            steps: [
+                { element: 'header', popover: { title: 'Vítejte', description: 'Toto je úvod do návrhu databází.' } },
+                { element: 'section:nth-of-type(1)', popover: { title: 'Úvod', description: 'Zde je vysvìtlen dùleitost databází.' } },
+                { element: '#sources', popover: { title: 'Zdroje', description: 'Pouité zdroje na konci.' } }
+            ]
+        });
+        tour.drive();
+    </script>
+</body>
+</html>
