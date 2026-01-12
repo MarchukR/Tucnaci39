@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Návrh databází: Praktickı pøíklad</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        h1, h2, h3 {
+            color: #007bff;
+        }
+
+        section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .audio-section {
+            background-color: #17a2b8;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        iframe {
+            display: block;
+            margin: 10px auto;
+        }
+
+        #sources {
+            font-style: italic;
+        }
+
+        code {
+            background-color: #e9ecef;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        pre {
+            background-color: #e9ecef;
+            padding: 10px;
+            overflow-x: auto;
+            border-radius: 8px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Návrh databází: Od konceptu po realizaci</h1>
+    </header>
+
+    <section>
+        <h2>Úvod</h2>
+        <p>Návrh databáze je klíèovou fází vıvoje softwaru. <strong>Špatnì navrená databáze</strong> vede k redundanci (opakování) dat, nekonzistenci (rùzné údaje o tée vìci na rùznıch místech) a pomalému vıkonu. Cílem návrhu je vytvoøit strukturu, která efektivnì ukládá data a zachovává jejich integritu.</p>
+        <p>Proces návrhu dìlíme na tøi hlavní fáze:</p>
+        <ol>
+            <li>Konceptuální návrh (ER diagramy)</li>
+            <li>Logickı návrh (Normalizace, relaèní schéma)</li>
+            <li>Fyzickı návrh (SQL kód)</li>
+        </ol>
+    </section>
+
+    <section>
+        <h2>Praktická ukázka: Databáze pro E-shop</h2>
+        <p>Pro demonstraci budeme navrhovat zjednodušenı systém pro e-shop.</p>
+        <p>Zadání: Potøebujeme evidovat zákazníky, produkty a objednávky. Víme, e jedna objednávka mùe obsahovat více produktù a jeden produkt mùe bıt ve více objednávkách.</p>
+        <img src="https://svg.template.creately.com/drem47fZBw8" alt="ER diagram for online shopping system">
+    </section>
+
+    <section>
+        <h2>Fáze 1: Konceptuální model (ER Diagram)</h2>
+        <p>V této fázi nás nezajímají tabulky ani datové typy, ale entity (objekty) a vztahy mezi nimi.</p>
+        <p>Identifikované entity:</p>
+        <ul>
+            <li>Zákazník (Jméno, Email, Adresa)</li>
+            <li>Produkt (Název, Cena)</li>
+            <li>Objednávka (Datum, Stav)</li>
+        </ul>
+        <p>Vztahy:</p>
+        <ol>
+            <li>Zákazník vytváøí Objednávku (Vztah 1:N – jeden zákazník mùe mít mnoho objednávek).</li>
+            <li>Objednávka obsahuje Produkty (Vztah M:N – mnoho produktù v mnoha objednávkách).</li>
+        </ol>
+        <p>Poznámka: Vztah M:N (Mnoho k mnoha) je v relaèních databázích problematickı a v další fázi jej budeme muset rozbít pomocí tzv. vazební tabulky.</p>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/LowjDtiNlk4" title="Entity Relationship Diagrams" frameborder="0" allowfullscreen></iframe>
+    </section>
+
+    <section>
+        <h2>Fáze 2: Logickı návrh a Normalizace</h2>
+        <p>Zde pøevádíme entity na tabulky a aplikujeme pravidla Normalizace. Normalizace je proces odstraòování redundance.</p>
+        <h3>Tøetí normální forma (3NF) - Prakticky</h3>
+        <p>Pøedstavme si, e bychom vše nacpali do jedné tabulky. To by byla chyba:</p>
+        <table border="1">
+            <tr><th>ID_Obj</th><th>Zákazník</th><th>Adresa</th><th>Produkt</th></tr>
+            <tr><td>101</td><td>Jan Novák</td><td>Praha 1</td><td>Notebook</td></tr>
+            <tr><td>102</td><td>Jan Novák</td><td>Praha 1</td><td>Myš</td></tr>
+        </table>
+        <p>Problém: Jméno "Jan Novák" a adresa "Praha 1" se opakují. Pokud se Jan pøestìhuje, musíme to mìnit na 100 místech. To porušuje principy normalizace.</p>
+        <p>Øešení (Rozdìlení do tabulek):</p>
+        <ol>
+            <li>Tabulka Zakaznici (uloíme Jana jen jednou).</li>
+            <li>Tabulka Produkty.</li>
+            <li>Tabulka Objednavky (odkazuje na Jana pomocí ID).</li>
+            <li>Tabulka Polozky_Objednavky (øeší vztah M:N – propojuje objednávku a produkt).</li>
+        </ol>
+        <img src="https://cdn.hackr.io/uploads/posts/attachments/1666888816mdnYlrMoEE.png" alt="Normalization in DBMS">
+    </section>
+
+    <section>
+        <h2>Fáze 3: Fyzickı návrh (SQL Kód)</h2>
+        <p>Toto je finální kód, kterı spustíme v databázi (napø. MySQL, PostgreSQL). Zde definujeme datové typy (INT, VARCHAR, DECIMAL) a klíèe.</p>
+        <p>Primární klíè (PK): Jedineènı identifikátor øádku.</p>
+        <p>Cizí klíè (FK): Odkaz na primární klíè jiné tabulky (vytváøí vztah).</p>
+        <pre><code>-- 1. Tabulka Zákazníkù
+CREATE TABLE Zakaznici (
+    zakaznik_id INT PRIMARY KEY AUTO_INCREMENT,
+    jmeno VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    adresa VARCHAR(255)
+);
+
+-- 2. Tabulka Produktù
+CREATE TABLE Produkty (
+    produkt_id INT PRIMARY KEY AUTO_INCREMENT,
+    nazev VARCHAR(100) NOT NULL,
+    cena DECIMAL(10, 2) NOT NULL -- Cena s 2 desetinnımi místy
+);
+
+-- 3. Tabulka Objednávek
+CREATE TABLE Objednavky (
+    objednavka_id INT PRIMARY KEY AUTO_INCREMENT,
+    zakaznik_id INT, -- Cizí klíè
+    datum_vytvoreni DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (zakaznik_id) REFERENCES Zakaznici(zakaznik_id)
+);
+
+-- 4. Vazební tabulka (øeší vztah M:N)
+CREATE TABLE Polozky_Objednavky (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    objednavka_id INT,
+    produkt_id INT,
+    pocet_kusu INT DEFAULT 1,
+    FOREIGN KEY (objednavka_id) REFERENCES Objednavky(objednavka_id),
+    FOREIGN KEY (produkt_id) REFERENCES Produkty(produkt_id)
+);</code></pre>
+        <p>Vysvìtlení kódu: V tabulce Objednavky neukládáme jméno zákazníka, ale pouze zakaznik_id. Pokud se Jan Novák pøejmenuje, zmìníme to jen v tabulce Zakaznici a všechny jeho objednávky zùstanou platné. To je síla relaèní databáze.</p>
+        <p>Tabulka Polozky_Objednavky nám umoòuje øíct: "V objednávce è. 1 je 2x Produkt A a 1x Produkt B".</p>
+        <img src="https://www.mssqltips.com/wp-content/images-tips/6818_sql-select-examples.002.png" alt="SQL Server SELECT Examples">
+    </section>
+
+    <section>
+        <h2>Závìr</h2>
+        <p>Kvalitní návrh databáze pøipomíná stavbu domu.</p>
+        <ol>
+            <li>Nejdøív potøebujeme nákres (ER Diagram).</li>
+            <li>Pak musíme rozvrhnout místnosti tak, aby se v domì dalo ít a nebylo v nìm zbyteèné místo (Normalizace).</li>
+            <li>Nakonec dùm postavíme z cihel (SQL kód).</li>
+        </ol>
+        <p>Dodrení tohoto postupu zajišuje, e aplikace bude stabilní, data budou v bezpeèí a systém bude moné v budoucnu snadno rozšiøovat.</p>
+        <canvas id="phasesChart" width="400" height="200"></canvas>
+        <script>
+            const ctx2 = document.getElementById('phasesChart').getContext('2d');
+            const chart2 = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['Fáze 1', 'Fáze 2', 'Fáze 3'],
+                    datasets: [{
+                        label: 'Fáze návrhu',
+                        data: [1, 2, 3],
+                        backgroundColor: ['#007bff', '#17a2b8', '#6610f2']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        </script>
+    </section>
+
+    <section class="audio-section">
+        <h2>Audiopøehled</h2>
+        <p>Pro vytvoøení audiopøehledu z textu okruhu pouijte NotebookLM od Google. Nahrajte text do https://notebooklm.google.com/, vyberte "Generate Audio Overview" a tool vygeneruje audio shrnutí. Bohuel, pøímé generování zde není moné, take navštivte stránku pro vlastní vytvoøení.</p>
+    </section>
+
+    <section id="sources">
+        <h2>Pouité zdroje</h2>
+        <ul>
+            <li>W3Schools SQL Tutorial</li>
+            <li>PostgreSQL Official Documentation</li>
+            <li>MySQL Official Documentation</li>
+            <li>Knihy o databázovıch systémech a SQL</li>
+        </ul>
+    </section>
+
+    <script>
+        const driver = window.driver.js.driver;
+        const tour = driver({
+            showProgress: true,
+            steps: [
+                { element: 'header', popover: { title: 'Vítejte', description: 'Toto je praktickı pøíklad návrhu databází.' } },
+                { element: 'section:nth-of-type(2)', popover: { title: 'Ukázka', description: 'Zde je popis e-shopu.' } },
+                { element: '#sources', popover: { title: 'Zdroje', description: 'Pouité zdroje na konci.' } }
+            ]
+        });
+        tour.drive();
+    </script>
+</body>
+</html>
