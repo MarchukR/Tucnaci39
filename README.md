@@ -1,3 +1,3 @@
 # Maturitni-Helpdesk---Navrh-Databazi
 
-odkaz na stránku: (*doplnit url az bude hosting)
+odkaz na stránku: (tucnaci39.xo.je)
